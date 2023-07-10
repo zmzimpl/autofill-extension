@@ -1,0 +1,6 @@
+.plasmo-sidebar-hide {
+  z-index: 0 !important;
+}
+.plasmo-sidebar-show {
+  z-index: 2147483647 !important;
+}
