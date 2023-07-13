@@ -1,9 +1,8 @@
 chrome?.action?.onClicked?.addListener((extension) => {
-  console.log(`action clicked: 666`, extension, chrome)
   try {
-      chrome?.tabs?.sendMessage(extension.id, { action: "toggleSidebar" })
-    } catch (error) {
-    console.log('error', error);
+    chrome?.tabs?.sendMessage(extension.id, { action: "toggleSidebar" })
+  } catch (error) {
+    console.log("error", error)
   }
 })
 
@@ -17,6 +16,58 @@ chrome?.runtime?.onConnect?.addListener((port) => {
     })
   }
 })
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  console.log("tabId", tabId)
+  console.log("changeInfo", changeInfo)
+  console.log("tab", tab)
+  if (changeInfo.status === "complete" && tab.active) {
+    chrome.scripting
+      .executeScript({
+        target: { tabId: tabId },
+        function: formInfoScript
+      } as any)
+      .then((results) => {
+        // results 是一个结果对象数组，每个结果对象包含了注入的脚本的返回值
+        // 由于我们只在一个标签页中注入了脚本，所以我们只需要获取第一个结果对象的结果
+        const formInfoArray = results[0].result
+        console.log("result", formInfoArray)
+
+        // 在这里，你可以将 formInfoArray 发送给你的 content script
+        // 例如，你可以使用 chrome.tabs.sendMessage 方法
+        chrome.tabs.sendMessage(tabId, { action: 'formInfo', formInfoArray })
+      })
+  }
+})
+
+function formInfoScript() {
+  let formInfoArray = []
+
+  const forms = document.getElementsByTagName("form")
+  for (let i = 0; i < forms.length; i++) {
+    const form = forms[i]
+    let formInfo = { fields: [] }
+
+    const inputs = form.getElementsByTagName("input")
+
+    for (let j = 0; j < inputs.length; j++) {
+      const input = inputs[j]
+      const inputId = input.id
+
+      if (inputId) {
+        const label = document.querySelector(`label[for="${inputId}"]`)
+
+        if (label) {
+          formInfo.fields.push({ field: inputId, label: label.textContent })
+        }
+      }
+    }
+
+    formInfoArray.push(formInfo)
+  }
+
+  return formInfoArray
+}
 
 // chrome.commands.onCommand.addListener((command) => {
 //   console.log(command);

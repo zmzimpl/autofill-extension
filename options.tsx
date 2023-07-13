@@ -112,6 +112,7 @@ function OptionsPage() {
   }
 
   return (
+    
     <Box>
       <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
         <Tabs value={curTab} onChange={handleChange} centered>
@@ -193,7 +194,7 @@ function OptionsPage() {
               />
             }
             labelPlacement="top"
-            label="Open Sidebar By Default"
+            label="Open Sidebar If Has Form"
           />
         </FormGroup>
       </CustomTabPanel>

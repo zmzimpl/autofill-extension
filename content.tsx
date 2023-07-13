@@ -11,8 +11,9 @@ import ContentPage from "~content-page/ContentPage"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://*/*", "http://*/*"],
-  exclude_matches: ["https://mui.com/*", "http://mui.com/*"],
-  all_frames: true
+  // exclude_matches: ["https://mui.com/*", "http://mui.com/*"],
+  run_at: "document_start",
+  all_frames: true,
 }
 
 export const getStyle = () => {

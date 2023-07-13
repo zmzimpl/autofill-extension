@@ -38,6 +38,39 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
     "#plasmo-shadow-container"
   )
 
+  const handleFocus = (event) => {
+    if (
+      event.target.tagName === "INPUT" ||
+      event.target.tagName === "TEXTAREA"
+    ) {
+      setFocusedElement(event.target)
+    }
+  }
+  const handleActiveElement = () => {
+    if (
+      document?.activeElement?.tagName === "INPUT" ||
+      document?.activeElement?.tagName === "TEXTAREA"
+    ) {
+      setFocusedElement(document.activeElement)
+    }
+  }
+
+  useEffect(() => {
+    const checkIfHasForms = async () => {
+      const forms = document.getElementsByTagName("form")
+      const options = (await storage.get("options")) as DefaultOptions
+      if (forms.length > 0 && options.defaultVisible) {
+        setVisible(true)
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", checkIfHasForms)
+
+    return () => {
+      document.removeEventListener("DOMContentLoaded", checkIfHasForms)
+    }
+  })
+
   useEffect(() => {
     if (visible) {
       container.classList.toggle("plasmo-sidebar-show", true)
@@ -71,14 +104,8 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
   }, [visible])
 
   useEffect(() => {
-    const handleFocus = (event) => {
-      if (
-        event.target.tagName === "INPUT" ||
-        event.target.tagName === "TEXTAREA"
-      ) {
-        setFocusedElement(event.target)
-      }
-    }
+    handleActiveElement()
+
     document.addEventListener("focus", handleFocus, true)
     // 👇️ run function when component unmounts 👇️
     return () => {
@@ -93,17 +120,16 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
         setItems(items as any[])
       }
     })
-    storage.get("options").then((options: unknown) => {
-      if (options) {
-        setVisible((options as DefaultOptions).defaultVisible)
-      }
-    })
   }, [])
 
   const handleClickItem = useCallback(
     (content) => {
       if (focusedElement) {
         focusedElement.value = content
+        const inputEvent = new Event('input', { bubbles: true });
+        const changeEvent  = new Event('change', { bubbles: true });
+        focusedElement.dispatchEvent(inputEvent);
+        focusedElement.dispatchEvent(changeEvent);
       }
     },
     [focusedElement]
