@@ -78,7 +78,6 @@ function OptionsPage() {
     // storage.set("items", []);
     storage.get("items").then((items: unknown) => {
       if (items) {
-        console.log(items)
         setItems(items as any[])
       }
     })
