@@ -34,7 +34,7 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [visible, setVisible] = React.useState(false)
   const [focusedElement, setFocusedElement] = React.useState(null)
-  const container = anchor.element.firstElementChild.shadowRoot.querySelector(
+  const container = anchor.element.querySelector('#plasmo-autofill').shadowRoot.querySelector(
     "#plasmo-shadow-container"
   )
 

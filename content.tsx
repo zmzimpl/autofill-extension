@@ -22,8 +22,10 @@ export const getStyle = () => {
   return style
 }
 
+export const getShadowHostId = () => "plasmo-autofill"
+
 function ContentIndex({ anchor }: PlasmoCSUIProps) {
-  const shadowContainer = anchor.element.firstElementChild.shadowRoot
+  const shadowContainer = anchor.element.querySelector('#plasmo-autofill').shadowRoot
   // console.log('container', container);
   // const shadowContainer = container.attachShadow({ mode: "open" })
   const emotionRoot = document.createElement("style")
