@@ -1,14 +1,17 @@
 // SettingsPage.js
 
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 import DeleteIcon from "@mui/icons-material/Delete"
 import {
   Box,
   Button,
   Card,
   CardContent,
+  FilledInput,
   FormControlLabel,
   FormGroup,
   IconButton,
+  InputAdornment,
   List,
   ListItem,
   ListItemText,
@@ -62,7 +65,20 @@ function OptionsPage() {
   const [content, setContent] = useState("")
   const [items, setItems] = useState([])
   const [curTab, setCurTab] = React.useState(0)
-  const [options, setOptions] = useState({ defaultVisible: false })
+  const [options, setOptions] = useState({
+    defaultVisible: false,
+    OPENAI_KEY: ""
+  })
+
+  const [showOpenAIKey, setShowOpenAIKey] = React.useState(false)
+
+  const handleClickShowOpenAIKey = () => setShowOpenAIKey((show) => !show)
+
+  const handleMouseDownOpenAIKey = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault()
+  }
 
   useEffect(() => {}, [])
 
@@ -111,7 +127,6 @@ function OptionsPage() {
   }
 
   return (
-    
     <Box>
       <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
         <Tabs value={curTab} onChange={handleChange} centered>
@@ -194,6 +209,43 @@ function OptionsPage() {
             }
             labelPlacement="top"
             label="Open Sidebar If Has Form"
+          />
+          <FormControlLabel
+            control={
+              <FilledInput
+                sx={{ mt: 1, width: "400px" }}
+                id="openai-key"
+                value={options.OPENAI_KEY}
+                size="small"
+                onChange={(e) => {
+                  changeOptions({ OPENAI_KEY: e.target.value })
+                }}
+                type={showOpenAIKey ? "text" : "password"}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowOpenAIKey}
+                      onMouseDown={handleMouseDownOpenAIKey}
+                      edge="end">
+                      {showOpenAIKey ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              // <TextField
+              //     sx={{ mt: 2, width: "500px" }}
+              //     label="OpenAI_KEY"
+              //     type="password"
+              //     value={options.OPENAI_KEY}
+              //     size="small"
+              //     onChange={(e) => {
+              //       changeOptions({ OPENAI_KEY: e.target.value })
+              //     }}
+              //   />
+            }
+            labelPlacement="top"
+            label="OpenAI_KEY"
           />
         </FormGroup>
       </CustomTabPanel>

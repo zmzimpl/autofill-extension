@@ -18,6 +18,7 @@ import React, { useCallback, useEffect, useState } from "react"
 
 import type { DefaultOptions } from "~default-options"
 import storage from "~utils/storage"
+import OpenAIAutofill from "./components/openai-autofill"
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -34,9 +35,12 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [visible, setVisible] = React.useState(false)
   const [focusedElement, setFocusedElement] = React.useState(null)
+  const [options, setOptions] = useState({});
   const container = anchor.element.querySelector('#plasmo-autofill').shadowRoot.querySelector(
     "#plasmo-shadow-container"
   )
+
+  const [formInfoArray, setFormInfoArray] = useState([]);
 
   const handleFocus = (event) => {
     if (
@@ -58,10 +62,11 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
   useEffect(() => {
     const checkIfHasForms = async () => {
       const forms = document.getElementsByTagName("form")
-      const options = (await storage.get("options")) as DefaultOptions
-      if (forms.length > 0 && options.defaultVisible) {
+      const options = (await storage.get("options")) as DefaultOptions;
+      if (forms.length > 0 && options?.defaultVisible) {
         setVisible(true)
       }
+      options && setOptions(options);
     }
 
     document.addEventListener("DOMContentLoaded", checkIfHasForms)
@@ -90,6 +95,8 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
     const handleEvent = (event) => {
       if (event.action === "toggleSidebar") {
         toggleVisible(!visible)
+      } else if (event.action === 'formInfo') {
+        setFormInfoArray(event.formInfoArray || []);
       }
     }
 
@@ -162,6 +169,9 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
 
   return (
     <div id="autofill-content-page" style={{ zIndex: 2147483647 }}>
+      {formInfoArray.map((form, index) => {
+        return (<OpenAIAutofill key={index} options={options} list={items} form={form}></OpenAIAutofill>)
+      })}
       <Drawer
         sx={{
           position: "fixed",

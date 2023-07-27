@@ -38,31 +38,68 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 function formInfoScript() {
   let formInfoArray = []
 
+  function isGoogleForm(url) {
+    var regex = new RegExp("^https:\/\/docs\.google\.com\/forms\/d\/e\/.*\/viewform$");
+    return regex.test(url);
+  }
+
   const forms = document.getElementsByTagName("form")
   for (let i = 0; i < forms.length; i++) {
-    const form = forms[i]
-    let formInfo = { fields: [] }
-
+    const form = forms[i];
+    let formSelector = `form[id="${form.id}"]`;
+    if (!form.id) {
+      // TODO: 如果没有 ID，则需要通过其他方式去捕获 form 的 dom，这里先置为空
+      formSelector = '';
+    }
+    let formInfo = { fields: [], selector: formSelector }
+    // foreach HTMLCollectionOf<HTMLInputElement> 
     const inputs = form.getElementsByTagName("input")
+    const textreas = form.getElementsByTagName("textrea")
 
     for (let j = 0; j < inputs.length; j++) {
       const input = inputs[j]
       const inputId = input.id
 
-      // 常规的表单元素
+      // 常规的 input 元素, 带 ID
       if (inputId) {
-        const label = document.querySelector(`label[for="${inputId}"]`)
+        const label = form.querySelector(`label[for="${inputId}"]`)
 
         if (label) {
-          formInfo.fields.push({ field: inputId, label: label.textContent })
+          formInfo.fields.push({ selector: `input[id="${inputId}"]`, question: label.textContent })
         }
       } else {
-        // // 没有 id 的表单元素
-        // const label = input.parentElement.querySelector("label")
+        // 如果是谷歌表单
+        if (isGoogleForm(location.href)) {
+          if (input.className && input.getAttribute("type") !== 'hidden') {
+            const labelId = input.getAttribute('aria-labelledby');
+            const label = form.querySelector(`div[id="${labelId}"]`)
+            formInfo.fields.push({ selector: `input[aria-labelledby="${labelId}"]`, question: label.textContent })
+          }
+        }
+      }
+    }
+  
+    for (let j = 0; j < textreas.length; j++) {
+      const input = textreas[j]
+      const inputId = input.id
 
-        // if (label) {
-        //   formInfo.fields.push({ field: input, label: label.textContent })
-        // }
+      // 常规的 textrea 元素, 带 ID
+      if (inputId) {
+        const label = form.querySelector(`label[for="${inputId}"]`)
+
+        if (label) {
+          formInfo.fields.push({ selector: `input[id="${inputId}"]`, question: label.textContent })
+        }
+      } else {
+        // 如果是谷歌表单
+        if (isGoogleForm(location.href)) {
+          if (input.className && input.getAttribute("type") !== 'hidden') {
+            console.log(input)
+            const labelId = input.getAttribute('aria-labelledby');
+            const label = form.querySelector(`div[id="${labelId}"]`)
+            formInfo.fields.push({ selector: `input[aria-labelledby="${labelId}"]`, question: label.textContent })
+          }
+        }
       }
     }
 
@@ -71,6 +108,7 @@ function formInfoScript() {
 
   return formInfoArray
 }
+
 
 // chrome.commands.onCommand.addListener((command) => {
 //   console.log(command);
