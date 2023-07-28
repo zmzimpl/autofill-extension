@@ -170,7 +170,11 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
   return (
     <div id="autofill-content-page" style={{ zIndex: 2147483647 }}>
       {formInfoArray.map((form, index) => {
-        return (<OpenAIAutofill key={index} options={options} list={items} form={form}></OpenAIAutofill>)
+        if (form.fields.length && visible) {
+          return (<OpenAIAutofill key={index} options={options} list={items} form={form}></OpenAIAutofill>)
+        } else {
+          return null;
+        }
       })}
       <Drawer
         sx={{
@@ -179,6 +183,7 @@ function ContentPage({ anchor }: PlasmoCSUIProps) {
           width: "300px",
           height: "100vh",
           flexShrink: 0,
+          display: visible ? 'block' : 'none',
           "& .MuiDrawer-paper": {
             width: "300px"
           }
