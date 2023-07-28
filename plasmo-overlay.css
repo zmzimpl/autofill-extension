@@ -4,3 +4,6 @@
 .plasmo-sidebar-show {
   z-index: 2147483647 !important;
 }
+html {
+  font-size: 14px !important;
+}

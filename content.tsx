@@ -8,6 +8,7 @@ import type { PlasmoCSConfig, PlasmoCSUIProps } from "plasmo"
 import React from "react"
 
 import ContentPage from "~content-page/ContentPage"
+ 
 
 export const config: PlasmoCSConfig = {
   matches: ["https://*/*", "http://*/*"],
@@ -25,6 +26,7 @@ export const getStyle = () => {
 export const getShadowHostId = () => "plasmo-autofill"
 
 function ContentIndex({ anchor }: PlasmoCSUIProps) {
+  anchor.element.setAttribute("style", "font-size: initial")
   const shadowContainer = anchor.element.querySelector('#plasmo-autofill').shadowRoot
   // console.log('container', container);
   // const shadowContainer = container.attachShadow({ mode: "open" })
